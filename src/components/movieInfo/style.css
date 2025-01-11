@@ -1,0 +1,27 @@
+.app-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .movie-info {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .movie-poster img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+  
+  .movie-details {
+    margin-top: 20px;
+  }
+  
+  .movie-details h3,
+  .movie-details p {
+    font-size: 18px;
+    margin: 5px 0;
+  }
+  

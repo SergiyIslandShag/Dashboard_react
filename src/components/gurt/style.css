@@ -1,0 +1,44 @@
+.gurt-container {
+    text-align: center;
+    padding: 10px;
+}
+
+.gurt-title {
+    font-size: 1.8em;
+}
+
+.gurt-description {
+    font-size: 1em;
+    margin: 10px 0;
+}
+
+.gurt-section-title {
+    font-size: 1.2em;
+    margin-top: 15px;
+}
+
+.gurt-members, .gurt-albums {
+    padding: 0;
+    margin: 0;
+}
+
+.gurt-members li {
+    font-size: 1em;
+}
+
+.album {
+    display: inline-block;
+    margin: 10px;
+    text-align: center;
+}
+
+.album-cover {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.album-name {
+    font-size: 0.9em;
+    margin-top: 5px;
+}

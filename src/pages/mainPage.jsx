@@ -1,5 +1,4 @@
 import { SolidButton, OutlineButton, AnimatedButton } from "./../../Buttons";
-// import all
 import * as Buttons from "./../../Buttons";
 import ClassComponent from "../../components_lesson/classComponent/ClassComponent";
 import "./MainPage.css";
