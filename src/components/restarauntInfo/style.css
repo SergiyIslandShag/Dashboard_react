@@ -1,0 +1,28 @@
+.restaurant-info {
+    padding: 12px;
+    max-width: 360px;
+    margin: 12px auto;
+    text-align: center;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+  }
+  
+  .restaurant-image {
+    width: 100%;
+    border-radius: 6px;
+    margin: 8px 0;
+  }
+  
+  .restaurant-info h1 {
+    font-size: 1.4rem;
+    color: gray;
+    margin-bottom: 8px;
+  }
+  
+  .restaurant-info p {
+    font-size: 0.95rem;
+    color: gray;
+    margin: 6px 0;
+  }
+  
