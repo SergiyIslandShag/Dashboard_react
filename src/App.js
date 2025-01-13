@@ -86,8 +86,8 @@ function App() {
         <h1>Лічильник натискань</h1>
         <Counter />
       </div> */}
-    </div>
 
+    </div>
   );
 }
 
