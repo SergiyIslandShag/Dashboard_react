@@ -2,7 +2,7 @@ import { TextField, Box, Button, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import "./../registerPage/style.css";
-import { FormError } from "../../components/errors/errors";
+import { FormError } from "../admin/users/createUserPage/errors/errors";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../components/providers/AuthProvider";

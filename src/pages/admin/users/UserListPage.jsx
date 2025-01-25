@@ -1,145 +1,102 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-    Avatar,
     Box,
     Button,
-    IconButton,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
+    TextField,
     Typography,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
+    Avatar,
+    Grid
 } from "@mui/material";
-import usersJson from "./users.json";
-import { Link } from "react-router-dom";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
 import { defaultAvatarUrl } from "../../../settings/urls";
 
-const UsersListPage = () => {
-    const [users, setUsers] = useState([]);
-    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [userToDelete, setUserToDelete] = useState(null);
+const CreateUserPage = () => {
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [role, setRole] = useState("");
+    const [password, setPassword] = useState("");
+    const [image, setImage] = useState("");
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        const json = localStorage.getItem("users");
+    const handleCreateUser = () => {
+        const newUser = {
+            id: Date.now(), // Use timestamp as ID
+            firstName,
+            lastName,
+            email,
+            role,
+            password,
+            image: image || defaultAvatarUrl,
+        };
 
-        if (!json) {
-            localStorage.setItem("users", JSON.stringify(usersJson));
-            setUsers(usersJson);
-        } else {
-            const data = JSON.parse(json);
-            setUsers(data);
-        }
-    }, []);
+        const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+        localStorage.setItem("users", JSON.stringify([...existingUsers, newUser]));
 
-    const handleDeleteClick = (user) => {
-        setUserToDelete(user);
-        setOpenDeleteDialog(true);
-    };
-
-    const handleDeleteConfirm = () => {
-        setUsers((prevUsers) =>
-            prevUsers.filter((user) => user.id !== userToDelete.id)
-        );
-        localStorage.setItem(
-            "users",
-            JSON.stringify(users.filter((user) => user.id !== userToDelete.id))
-        );
-        setOpenDeleteDialog(false);
-    };
-
-    const handleDeleteCancel = () => {
-        setOpenDeleteDialog(false);
+        navigate("/admin/users");
     };
 
     return (
-        <Box>
-            <Typography variant="h4" align="center" gutterBottom>
-                Users List
-            </Typography>
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell align="center">Id</TableCell>
-                            <TableCell align="center">Avatar</TableCell>
-                            <TableCell align="center">First name</TableCell>
-                            <TableCell align="center">Last name</TableCell>
-                            <TableCell align="center">Email</TableCell>
-                            <TableCell align="center">Role</TableCell>
-                            <TableCell align="center">Password</TableCell>
-                            <TableCell align="center">Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {users.map((user) => (
-                            <TableRow
-                                key={user.id}
-                                sx={{
-                                    "&:last-child td, &:last-child th": {
-                                        border: 0,
-                                    },
-                                }}
-                            >
-                                <TableCell align="center">{user.id}</TableCell>
-                                <TableCell align="center">
-                                    <Avatar
-                                        sx={{ margin: "auto" }}
-                                        alt="Remy Sharp"
-                                        src={user.image ? user.image : defaultAvatarUrl}
-                                    />
-                                </TableCell>
-                                <TableCell align="center">{user.firstName}</TableCell>
-                                <TableCell align="center">{user.lastName}</TableCell>
-                                <TableCell align="center">{user.email}</TableCell>
-                                <TableCell align="center">{user.role}</TableCell>
-                                <TableCell align="center">{user.password}</TableCell>
-                                <TableCell align="center">
-                                    <Link to={`user/${user.id}`}>
-                                        <IconButton>
-                                            <EditIcon />
-                                        </IconButton>
-                                    </Link>
-                                    <IconButton onClick={() => handleDeleteClick(user)}>
-                                        <DeleteIcon color="error" />
-                                    </IconButton>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+        <Box sx={{ maxWidth: 600, margin: "auto", padding: 2 }}>
+            <Typography variant="h4" align="center" gutterBottom>Create User</Typography>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <TextField
+                        label="First Name"
+                        fullWidth
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        label="Last Name"
+                        fullWidth
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        label="Email"
+                        fullWidth
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        label="Role"
+                        fullWidth
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        label="Password"
+                        fullWidth
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        label="Avatar URL"
+                        fullWidth
+                        value={image}
+                        onChange={(e) => setImage(e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={12} display="flex" justifyContent="center">
+                    <Avatar sx={{ width: 100, height: 100 }} src={image || defaultAvatarUrl} />
+                </Grid>
+            </Grid>
             <Box display="flex" justifyContent="center" marginTop={2}>
-                <Link to="user">
-                    <Button variant="contained">Create User</Button>
-                </Link>
+                <Button variant="contained" onClick={handleCreateUser}>Create User</Button>
             </Box>
-
-            <Dialog open={openDeleteDialog} onClose={handleDeleteCancel}>
-                <DialogTitle>Confirm Deletion</DialogTitle>
-                <DialogContent>
-                    <Typography>
-                        Are you sure you want to delete user{" "}
-                        <strong>{userToDelete?.firstName} {userToDelete?.lastName}</strong>?
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleDeleteCancel}>Cancel</Button>
-                    <Button onClick={handleDeleteConfirm} color="error">
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </Box>
     );
 };
 
-export default UsersListPage;
+export default CreateUserPage;

@@ -3,7 +3,7 @@ import { TextField, Box, Button } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import "./style.css";
-import { FormError } from "../../../../components/errors/errors";
+import { FormError } from "../createUserPage/errors/errors";
 import { useEffect } from "react";
 
 const EditUserPage = ({ isEdit = false }) => {
