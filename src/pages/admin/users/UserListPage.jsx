@@ -1,102 +1,121 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import {
+    Avatar,
     Box,
     Button,
-    TextField,
-    Typography,
-    Avatar,
-    Grid
+    IconButton,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { defaultAvatarUrl } from "../../../settings/urls";
+import { Link } from "react-router-dom";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from '@mui/icons-material/Delete';
+import {defaultAvatarUrl} from "../../../settings/urls";
+import {useSelector} from "react-redux";
+import useAction from "../../../hooks/useAction";
+import ModalDelete from "../../../components/modal/ModalDelete";
 
-const CreateUserPage = () => {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
-    const [role, setRole] = useState("");
-    const [password, setPassword] = useState("");
-    const [image, setImage] = useState("");
-    const navigate = useNavigate();
+const UsersListPage = () => {
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const [userId, setUserId] = React.useState(0);
+    const { users, isLoaded } = useSelector(state => state.user);
+    const {loadUsers, deleteUser} = useAction();
 
-    const handleCreateUser = () => {
-        const newUser = {
-            id: Date.now(), // Use timestamp as ID
-            firstName,
-            lastName,
-            email,
-            role,
-            password,
-            image: image || defaultAvatarUrl,
-        };
-
-        const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
-        localStorage.setItem("users", JSON.stringify([...existingUsers, newUser]));
-
-        navigate("/admin/users");
-    };
+    useEffect(() => {
+        if(!isLoaded){
+            loadUsers();
+        }
+    }, []);
 
     return (
-        <Box sx={{ maxWidth: 600, margin: "auto", padding: 2 }}>
-            <Typography variant="h4" align="center" gutterBottom>Create User</Typography>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <TextField
-                        label="First Name"
-                        fullWidth
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        label="Last Name"
-                        fullWidth
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        label="Email"
-                        fullWidth
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        label="Role"
-                        fullWidth
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        label="Password"
-                        fullWidth
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        label="Avatar URL"
-                        fullWidth
-                        value={image}
-                        onChange={(e) => setImage(e.target.value)}
-                    />
-                </Grid>
-                <Grid item xs={12} display="flex" justifyContent="center">
-                    <Avatar sx={{ width: 100, height: 100 }} src={image || defaultAvatarUrl} />
-                </Grid>
-            </Grid>
-            <Box display="flex" justifyContent="center" marginTop={2}>
-                <Button variant="contained" onClick={handleCreateUser}>Create User</Button>
+        <Box>
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell align="center">Id</TableCell>
+                            <TableCell align="center">Avatar</TableCell>
+                            <TableCell align="center">First name</TableCell>
+                            <TableCell align="center">Last name</TableCell>
+                            <TableCell align="center">Email</TableCell>
+                            <TableCell align="center">Role</TableCell>
+                            <TableCell align="center">Password</TableCell>
+                            <TableCell align="center"></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {users.map((user) => (
+                            <TableRow
+                                key={user.id}
+                                sx={{
+                                    "&:last-child td, &:last-child th": {
+                                        border: 0,
+                                    },
+                                }}
+                            >
+                                <TableCell
+                                    align="center"
+                                    component="th"
+                                    scope="row"
+                                >
+                                    {user.id}
+                                </TableCell>
+                                <TableCell align="center">
+                                    <Avatar sx={{margin: "auto"}} alt="Remy Sharp" src={user.image ? user.image : defaultAvatarUrl} />
+                                </TableCell>
+                                <TableCell align="center">
+                                    {user.firstName}
+                                </TableCell>
+                                <TableCell align="center">
+                                    {user.lastName}
+                                </TableCell>
+                                <TableCell align="center">
+                                    {user.email}
+                                </TableCell>
+                                <TableCell align="center">
+                                    {user.role}
+                                </TableCell>
+                                <TableCell align="center">
+                                    {user.password}
+                                </TableCell>
+                                <TableCell align="center">
+                                    <Link to={`user/${user.id}`}>
+                                        <IconButton>
+                                            <EditIcon />
+                                        </IconButton>
+                                    </Link>
+                                    <IconButton onClick={() => {
+                                        setUserId(user.id)
+                                        setModalOpen(true)
+                                    }}>
+                                        <DeleteIcon color="error" />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <Box>
+                <Link to="user">
+                    <Button variant="contained">Create</Button>
+                </Link>
+            </Box>
+            <Box>
+                <ModalDelete
+                    title="User delete"
+                    text="Are you sure?"
+                    open={modalOpen}
+                    handleClose={() => setModalOpen(false)}
+                    action={() => {deleteUser(userId)}}/>
             </Box>
         </Box>
     );
 };
 
-export default CreateUserPage;
+export default UsersListPage;

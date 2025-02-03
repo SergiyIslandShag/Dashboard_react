@@ -1,40 +1,39 @@
-import { TextField, Box, Button, Typography } from "@mui/material";
-import { useFormik } from "formik";
+import {TextField, Box, Button, Typography} from "@mui/material";
+import {useFormik} from "formik";
 import * as Yup from "yup";
 import "./../registerPage/style.css";
-import { FormError } from "../admin/users/createUserPage/errors/errors";
-import { Link, useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
-import { AuthContext } from "../../components/providers/AuthProvider";
+import {FormError} from "../../components/errors/Errors";
+import {Link, useNavigate} from "react-router-dom";
+import {useState} from "react";
+import useAction from "../../hooks/useAction";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+const clientId = "";
 
 const LoginPage = () => {
     const [loginError, setLoginError] = useState(null);
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext);
+    const {login, googleLogin} = useAction();
 
     const formHandler = (values) => {
-        const localData = localStorage.getItem("users");
-
-        if (!localData) {
-            navigate("/register");
-        }
-
-        const users = JSON.parse(localData);
-        const user = users.find((u) => u.email === values.email);
-
         setLoginError(null);
-        if (user) {
-            if (user.password === values.password) {
-                localStorage.setItem("auth", JSON.stringify(user));
-                login();
-                navigate("/");
-            } else {
-                setLoginError("Не вірно вказано пароль");
-            }
+        const res = login(values);
+        if (res.type === "ERROR") {
+            setLoginError(res.payload);
         } else {
-            setLoginError(`Не знайдено користувача з поштою ${values.email}`);
+            navigate("/");
         }
     };
+
+    // google login
+    const googleLoginHandler = (response) => {
+        const jwtToken = response.credential;
+        googleLogin(jwtToken);
+        navigate("/");
+    }
+
+    const googleErrorHandler = () => {
+        console.log("Google login error")
+    }
 
     // init values
     const initValues = {
@@ -60,61 +59,75 @@ const LoginPage = () => {
     });
 
     return (
-        <Box
-            component="form"
-            onSubmit={formik.handleSubmit}
-            className="form-container"
-        >
-            <Box>
-                <h1>Login page</h1>
+        <GoogleOAuthProvider clientId={clientId}>
+            <Box
+                component="form"
+                onSubmit={formik.handleSubmit}
+                className="form-container"
+            >
+                <Box>
+                    <h1>Login page</h1>
+                </Box>
+                <Box className="form-control">
+                    <TextField
+                        type="email"
+                        id="email"
+                        name="email"
+                        label="Email"
+                        variant="filled"
+                        fullWidth
+                        onChange={formik.handleChange}
+                        value={formik.values.email}
+                        onBlur={formik.handleBlur}
+                    />
+                    {formik.touched.email && formik.errors.email ? (
+                        <FormError text={formik.errors.email}/>
+                    ) : null}
+                </Box>
+                <Box className="form-control">
+                    <TextField
+                        type="password"
+                        id="password"
+                        name="password"
+                        label="Password"
+                        variant="filled"
+                        fullWidth
+                        onChange={formik.handleChange}
+                        value={formik.values.password}
+                        onBlur={formik.handleBlur}
+                    />
+                    {formik.touched.password && formik.errors.password ? (
+                        <FormError text={formik.errors.password}/>
+                    ) : null}
+                </Box>
+                <Box className="form-control">
+                    <Button type="submit" variant="contained" fullWidth>
+                        Login
+                    </Button>
+                </Box>
+                <Box>
+                    <Typography>
+                        Ще не зареєстровані?{" "}
+                        <Link to="/register">Зареєструватися</Link>
+                    </Typography>
+                </Box>
+                <Box>
+                    <FormError text={loginError}/>
+                </Box>
+                <Box sx={{mt: 2}}>
+                    <GoogleLogin
+                    onSuccess={googleLoginHandler}
+                    onError={googleErrorHandler}
+                    type="standard"
+                    theme="outline"
+                    size="large"
+                    text="signin"
+                    shape="rectangular"
+                    logo_alignment="left"
+                    useOneTap={true}/>
+                </Box>
             </Box>
-            <Box className="form-control">
-                <TextField
-                    type="email"
-                    id="email"
-                    name="email"
-                    label="Email"
-                    variant="filled"
-                    fullWidth
-                    onChange={formik.handleChange}
-                    value={formik.values.email}
-                    onBlur={formik.handleBlur}
-                />
-                {formik.touched.email && formik.errors.email ? (
-                    <FormError text={formik.errors.email} />
-                ) : null}
-            </Box>
-            <Box className="form-control">
-                <TextField
-                    type="password"
-                    id="password"
-                    name="password"
-                    label="Password"
-                    variant="filled"
-                    fullWidth
-                    onChange={formik.handleChange}
-                    value={formik.values.password}
-                    onBlur={formik.handleBlur}
-                />
-                {formik.touched.password && formik.errors.password ? (
-                    <FormError text={formik.errors.password} />
-                ) : null}
-            </Box>
-            <Box className="form-control">
-                <Button type="submit" variant="contained" fullWidth>
-                    Login
-                </Button>
-            </Box>
-            <Box>
-                <Typography>
-                    Ще не зареєстровані?{" "}
-                    <Link to="/register">Зареєструватися</Link>
-                </Typography>
-            </Box>
-            <Box>
-                <FormError text={loginError} />
-            </Box>
-        </Box>
+        </GoogleOAuthProvider>
     );
 };
 

@@ -3,42 +3,22 @@ import { TextField, Box, Button } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import "./style.css";
-import { FormError } from "../createUserPage/errors/errors";
+import { FormError } from "../../../../components/errors/Errors";
 import { useEffect } from "react";
+import useAction from "../../../../hooks/useAction";
 
 const EditUserPage = ({ isEdit = false }) => {
     const navigate = useNavigate();
     const params = useParams();
+    const {createUser, updateUser} = useAction();
 
     const formEditHandler = (values) => {
-        const localData = localStorage.getItem("users");
-        if (!localData) {
-            navigate("/admin/users");
-        }
-
-        const users = JSON.parse(localData);
-        const userIndex = users.findIndex((u) => u.id == values.id);
-        users[userIndex] = { ...values };
-        localStorage.setItem("users", JSON.stringify(users));
-
+        updateUser(values);
         navigate("/admin/users");
     };
 
     const formCreateHandler = (values) => {
-        const users = localStorage.getItem("users");
-
-        if (!users) {
-            localStorage.setItem(
-                "users",
-                JSON.stringify([{ ...values, id: 1 }])
-            );
-        } else {
-            const array = JSON.parse(users);
-            values.id = array[array.length - 1].id + 1;
-            array.push(values);
-            localStorage.setItem("users", JSON.stringify(array));
-        }
-
+        createUser(values);
         navigate("/admin/users");
     };
 
@@ -49,6 +29,8 @@ const EditUserPage = ({ isEdit = false }) => {
         lastName: "",
         email: "",
         password: "",
+        role: "user",
+        image: ""
     };
 
     // validation yup scheme
